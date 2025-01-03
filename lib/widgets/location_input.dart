@@ -18,6 +18,18 @@ class _LocationInputState extends State<LocationInput> {
   PlaceLocation? _pickedLocation;
   var _isGettingLocation = false;
 
+  String get locationImage {
+    if(_pickedLocation == null) {
+      return '';
+    }
+
+    final lat = _pickedLocation!.latitude;
+    final lng = _pickedLocation!.longitude;
+
+//url with google location snapshot. return image url
+    return 'https://maps.googleapis.com/maps/api/';
+  }
+
   void _getCurrentLocation() async {
     Location location = Location();
 
@@ -78,6 +90,15 @@ class _LocationInputState extends State<LocationInput> {
 
     if (_isGettingLocation) {
       previewContent = CircularProgressIndicator();
+    }
+
+    if(_pickedLocation != null) {
+      previewContent = Image.network(
+        locationImage,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+      );
     }
 
     return Column(
