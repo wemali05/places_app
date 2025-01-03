@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:favorite_places/models/place.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
@@ -14,7 +15,7 @@ class LocationInput extends StatefulWidget {
 }
 
 class _LocationInputState extends State<LocationInput> {
-  Location? _pickedLocation;
+  PlaceLocation? _pickedLocation;
   var _isGettingLocation = false;
 
   void _getCurrentLocation() async {
@@ -44,22 +45,25 @@ class _LocationInputState extends State<LocationInput> {
       }
     }
 
-    setState(() {
-      _isGettingLocation = false;
-    });
-
+  
     locationData = await location.getLocation();
     final lat = locationData.latitude;
     final lng = locationData.longitude;
+
+    if (lat == null || lng == null) {
+      return;
+    }
 
     final url = Uri.parse('https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=YOUR_API_KEY');
 
     final response = await http.get(url);
     final resDate = json.decode(response.body);
     final address = resDate['results'][0]['formatted_address'];
-    
-    print(locationData.latitude);
-    print(locationData.longitude);
+
+    setState(() {
+      _pickedLocation = PlaceLocation(latitude: lat, longitude: lng, address: address)
+      _isGettingLocation = false;
+    });
   }
 
   @override
